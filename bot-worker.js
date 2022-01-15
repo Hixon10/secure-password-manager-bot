@@ -1,8 +1,9 @@
-const bot_token = ''
 const bot_username = ''
 
-const master_password = ''
-const master_password_salt = ''
+// These variables are managed by Cloudflare Secrets
+// const BOT_TOKEN = ''
+// const MASTER_PASSWORD = ''
+// const MASTER_PASSWORD_SALT = ''
 
 const helper_webpage_url = 'https://secure-password-manager-bot-web.pages.dev/'
 const github_repo = 'https://github.com/Hixon10/secure-password-manager-bot'
@@ -52,7 +53,7 @@ async function handleRequest(request) {
 }
 
 async function handle_message(d) {
-	const masterKey = await pbkdf2(fromUtf8(master_password), fromUtf8(master_password_salt), 100000, 256);
+	const masterKey = await pbkdf2(fromUtf8(MASTER_PASSWORD), fromUtf8(MASTER_PASSWORD_SALT), 100000, 256);
 	const stretchedMasterKey = await stretchKey(masterKey.arr.buffer);
 
 	let chat_id = d.chat.id
@@ -62,7 +63,7 @@ async function handle_message(d) {
 		otext[0] = otext[0].replace('/', '').replace(bot_username, '')
 		switch (otext[0]) {
 			case 'start':
-				await tg(bot_token, 'sendmessage', {
+				await tg(BOT_TOKEN, 'sendmessage', {
 					chat_id: chat_id,
 					text: getAboutBotInfo()
 				})
@@ -82,12 +83,12 @@ async function handle_message(d) {
 					const encodedPassword = await encodePassword(stretchedMasterKey, savePasswordValue);
 					await PASSWORD_MANAGER_STORE.put(savePasswordName, encodedPassword)
 					await PASSWORD_MANAGER_STORE.put(passwordNamesListKey, JSON.stringify([...existedPasswordNames]))
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: 'Password saved: name=' + otext[1]
 					})
 				} else {
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: 'You need to send password name and password. For example:\n' +
 							'/save PASSWORD_NAME ENCRYPTED_PASSWORD'
@@ -102,12 +103,12 @@ async function handle_message(d) {
 					if (readValue && !isEmpty(readValue)) {
 						decodedPassword = await decodePassword(stretchedMasterKey, readValue)
 					}
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: decodedPassword
 					})
 				} else {
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: 'You need to send password name. For example:\n' +
 							'/get PASSWORD_NAME'
@@ -121,7 +122,7 @@ async function handle_message(d) {
 				if (existedPasswordNames.size !== 0) {
 					mypasswords_result = 'Your saved passwords:\n' + Array.from(existedPasswordNames).join('\n')
 				}
-				await tg(bot_token, 'sendmessage', {
+				await tg(BOT_TOKEN, 'sendmessage', {
 					chat_id: chat_id,
 					text: mypasswords_result
 				})
@@ -138,12 +139,12 @@ async function handle_message(d) {
 						await PASSWORD_MANAGER_STORE.delete(passwordListKey)
 					}
 
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: "Your passwords have been deleted"
 					})
 				} else {
-					await tg(bot_token, 'sendmessage', {
+					await tg(BOT_TOKEN, 'sendmessage', {
 						chat_id: chat_id,
 						text: 'You need to confirm deleting all your passwords:\n' +
 							'/deletepasswords confirm'
@@ -151,13 +152,13 @@ async function handle_message(d) {
 				}
 				break
 			case 'help':
-				await tg(bot_token, 'sendmessage', {
+				await tg(BOT_TOKEN, 'sendmessage', {
 					chat_id: chat_id,
 					text: getAboutBotInfo()
 				})
 				break
 			case 'about':
-				await tg(bot_token, 'sendmessage', {
+				await tg(BOT_TOKEN, 'sendmessage', {
 					chat_id: chat_id,
 					text: github_repo
 				})

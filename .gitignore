@@ -1,0 +1,25 @@
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+
+## Directory-based project format
+.idea/
+.run/
+
+## File-based project format
+*.ipr
+*.iws
+*.iml
+
+## Additional for IntelliJ
+out/
+
+/.settings
+/.classpath
+/.project
+/target
+*/target
+/.git
+conf/*
+logs/*
+
+/bin/
